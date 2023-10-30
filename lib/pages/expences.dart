@@ -1,3 +1,4 @@
+import 'package:expence_tracker_app/widgets/add_expence.dart';
 import 'package:expence_tracker_app/widgets/expences_list.dart';
 import 'package:flutter/material.dart';
 import 'package:expence_tracker_app/models/expence.dart';
@@ -10,7 +11,6 @@ class Expences extends StatefulWidget {
 }
 
 class _ExpencesState extends State<Expences> {
-  // Create dummy data of expenses
   final List<ExpenceModel> _expenseList = [
     ExpenceModel(
         title: "Pepper",
@@ -24,13 +24,34 @@ class _ExpencesState extends State<Expences> {
         category: Category.travel)
   ];
 
+  //show the bottoModelSheet
+
+  void _openAddExpencesverlay() {
+    showModalBottomSheet(
+      isScrollControlled: true,
+      context: context,
+      builder: (context) {
+        return const AddNewExpencce();
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text("Flutter Expence Tracker"),
+        elevation: 0,
+        actions: [
+          IconButton(
+            onPressed: _openAddExpencesverlay,
+            icon: const Icon(Icons.add),
+          )
+        ],
+      ),
       body: Column(
         children: [
-          const Text("The chart"), // You can add your chart widget here
-          // Display the expense list
+          const Text("The chart"),
           ExpenccesList(expenseList: _expenseList)
         ],
       ),

@@ -1,4 +1,5 @@
 import 'package:expence_tracker_app/models/expence.dart';
+import 'package:expence_tracker_app/widgets/expence_tile.dart';
 import 'package:flutter/material.dart';
 
 class ExpenccesList extends StatelessWidget {
@@ -6,25 +7,15 @@ class ExpenccesList extends StatelessWidget {
 
   final List<ExpenceModel> expenseList;
 
-
   @override
   Widget build(BuildContext context) {
     return Expanded(
       child: ListView.builder(
         itemCount: expenseList.length,
         itemBuilder: (context, index) {
-          return ListTile(
-            title: Text(expenseList[index].title),
-            subtitle: Text(
-                'Amount: \$${expenseList[index].amount.toStringAsFixed(2)}'),
-
-          );
-
+          return ExpenceItem(expence: expenseList[index]);
         },
       ),
     );
   }
 }
-
-
-

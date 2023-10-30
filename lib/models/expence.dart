@@ -1,11 +1,23 @@
+import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
+import 'package:intl/intl.dart';
 
 //create a uuid
 final uuid = const Uuid().v4();
 
-//enum for categories
+//date formater
+final formatedDate = DateFormat.yMd();
 
+//enum for categories
 enum Category { food, travel, leasure, work }
+
+//category icons
+final CategoryIcons = {
+  Category.food: Icons.lunch_dining,
+  Category.travel: Icons.travel_explore,
+  Category.leasure: Icons.leave_bags_at_home_rounded,
+  Category.work: Icons.work,
+};
 
 class ExpenceModel {
   ExpenceModel({
@@ -20,4 +32,9 @@ class ExpenceModel {
   final double amount;
   final DateTime date;
   final Category category;
+
+  //getFrmated date
+  String get formattdeDateValue {
+    return formatedDate.format(date);
+  }
 }
