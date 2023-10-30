@@ -6,6 +6,7 @@ class ExpenccesList extends StatelessWidget {
 
   final List<ExpenceModel> expenseList;
 
+
   @override
   Widget build(BuildContext context) {
     return Expanded(
@@ -16,7 +17,7 @@ class ExpenccesList extends StatelessWidget {
             title: Text(expenseList[index].title),
             subtitle: Text(
                 'Amount: \$${expenseList[index].amount.toStringAsFixed(2)}'),
-                
+
           );
 
         },
@@ -24,3 +25,6 @@ class ExpenccesList extends StatelessWidget {
     );
   }
 }
+
+
+
