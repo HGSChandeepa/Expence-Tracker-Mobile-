@@ -2,7 +2,8 @@ import 'package:expence_tracker_app/models/expence.dart';
 import 'package:flutter/material.dart';
 
 class AddNewExpencce extends StatefulWidget {
-  const AddNewExpencce({super.key});
+  const AddNewExpencce({super.key, required this.onAddExpence});
+  final void Function(ExpenceModel expence) onAddExpence;
 
   @override
   State<AddNewExpencce> createState() => _AddNewExpencceState();
@@ -19,6 +20,7 @@ class _AddNewExpencceState extends State<AddNewExpencce> {
   final DateTime firstDate = DateTime(
       DateTime.now().year - 1, DateTime.now().month, DateTime.now().day);
   final DateTime lastDate = DateTime.now();
+
   //opendate modal
   Future<void> _openDateModal() async {
     try {
@@ -33,6 +35,58 @@ class _AddNewExpencceState extends State<AddNewExpencce> {
       });
     } catch (err) {
       debugPrint(err.toString());
+    }
+  }
+
+  //handle the save form for expences
+  void _handleSaveExpences() {
+    //form validate
+    final _enteredAmount = double.tryParse(
+        _amountController.text.trim()); // ten >> null  || "100"  >> 100.00
+
+    if (_titleController.text.trim().isEmpty ||
+        (_enteredAmount == null || _enteredAmount <= 0)) {
+      //show a error message
+
+      showDialog(
+        useSafeArea: true,
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text("Enter Valid Data"),
+            content: const Text(
+              'A dialog is a type of modal window that\n'
+              'appears in front of app content to\n'
+              'provide critical information, or prompt\n'
+              'for a decision to be made.',
+            ),
+            actions: <Widget>[
+              TextButton(
+                style: TextButton.styleFrom(
+                  textStyle: Theme.of(context).textTheme.labelLarge,
+                ),
+                child: const Text('Close'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+
+      return;
+    } else {
+      //create a new expence model and enter to the expenceList
+
+      final ExpenceModel newExpence = ExpenceModel(
+          title: _titleController.text,
+          amount: _enteredAmount,
+          date: _selectedDate,
+          category: _selectedCategory);
+
+      //append the new expance
+      widget.onAddExpence(newExpence);
     }
   }
 
@@ -130,7 +184,7 @@ class _AddNewExpencceState extends State<AddNewExpencce> {
                       child: const Text("Close"),
                     ),
                     ElevatedButton(
-                      onPressed: () {},
+                      onPressed: _handleSaveExpences,
                       style: const ButtonStyle(
                         backgroundColor: MaterialStatePropertyAll(Colors.green),
                       ),

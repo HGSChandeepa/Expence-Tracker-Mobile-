@@ -11,7 +11,7 @@ class Expences extends StatefulWidget {
 }
 
 class _ExpencesState extends State<Expences> {
-  final List<ExpenceModel> _expenseList = [
+  final List<ExpenceModel> expenseList = [
     ExpenceModel(
         title: "Pepper",
         amount: 10,
@@ -31,9 +31,15 @@ class _ExpencesState extends State<Expences> {
       isScrollControlled: true,
       context: context,
       builder: (context) {
-        return const AddNewExpencce();
+        return AddNewExpencce(
+          onAddExpence: addNewExpence,
+        );
       },
     );
+  }
+
+  void addNewExpence(ExpenceModel expence) {
+    expenseList.add(expence);
   }
 
   @override
@@ -52,7 +58,7 @@ class _ExpencesState extends State<Expences> {
       body: Column(
         children: [
           const Text("The chart"),
-          ExpenccesList(expenseList: _expenseList)
+          ExpenccesList(expenseList: expenseList)
         ],
       ),
     );
