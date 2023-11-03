@@ -1,7 +1,9 @@
+import 'package:expence_tracker_app/server/database.dart';
 import 'package:expence_tracker_app/widgets/add_expence.dart';
 import 'package:expence_tracker_app/widgets/expences_list.dart';
 import 'package:flutter/material.dart';
 import 'package:expence_tracker_app/models/expence.dart';
+import 'package:hive/hive.dart';
 import 'package:pie_chart/pie_chart.dart';
 
 class Expences extends StatefulWidget {
@@ -12,18 +14,22 @@ class Expences extends StatefulWidget {
 }
 
 class _ExpencesState extends State<Expences> {
-  final List<ExpenceModel> _expenseList = [
-    ExpenceModel(
-        title: "Pepper",
-        amount: 10,
-        date: DateTime.now(),
-        category: Category.food),
-    ExpenceModel(
-        title: "Tomato",
-        amount: 12.5,
-        date: DateTime.now(),
-        category: Category.travel)
-  ];
+  //hive related stuff
+  final _myBox = Hive.box("expenceDatabase");
+  Database db = Database();
+
+  // final List<ExpenceModel> _expenseList = [
+  //   ExpenceModel(
+  //       title: "Pepper",
+  //       amount: 10,
+  //       date: DateTime.now(),
+  //       category: Category.food),
+  //   ExpenceModel(
+  //       title: "Tomato",
+  //       amount: 12.5,
+  //       date: DateTime.now(),
+  //       category: Category.travel)
+  // ];
 
   //show the bottoModelSheet
 
@@ -41,18 +47,21 @@ class _ExpencesState extends State<Expences> {
 
   void addNewExpence(ExpenceModel expence) {
     setState(() {
-      _expenseList.add(expence);
+      db.expenceList.add(expence);
       calculateCategoryAmounts();
     });
+
+    db.updateData();
   }
 
   void removeExpence(ExpenceModel expence) {
-    final deletedIndex = _expenseList.indexOf(expence);
+    final deletedIndex = db.expenceList.indexOf(expence);
     ExpenceModel deletingExpende = expence;
     setState(() {
-      _expenseList.remove(deletingExpende);
+      db.expenceList.remove(deletingExpende);
       calculateCategoryAmounts();
     });
+    db.updateData();
 
     //this will help to remove multiplles
     ScaffoldMessenger.of(context).clearSnackBars();
@@ -64,7 +73,7 @@ class _ExpencesState extends State<Expences> {
           label: "undo",
           onPressed: () {
             setState(() {
-              _expenseList.insert(deletedIndex, deletingExpende);
+              db.expenceList.insert(deletedIndex, deletingExpende);
             });
           },
         ),
@@ -85,7 +94,7 @@ class _ExpencesState extends State<Expences> {
     double leasureTotal = 0;
     double workTotal = 0;
 
-    for (final expence in _expenseList) {
+    for (final expence in db.expenceList) {
       if (expence.category == Category.food) {
         foodTotal += expence.amount;
       }
@@ -127,7 +136,17 @@ class _ExpencesState extends State<Expences> {
   @override
   void initState() {
     super.initState();
-    calculateCategoryAmounts();
+
+    //hive stuff for init state
+
+    //if this is the first time create the initial data
+    if (_myBox.get("EXP_DATA") == null) {
+      db.createInitialData();
+      calculateCategoryAmounts();
+    } else {
+      db.loadData();
+      calculateCategoryAmounts();
+    }
   }
 
   @override
@@ -135,9 +154,9 @@ class _ExpencesState extends State<Expences> {
     Widget mainContent =
         const Center(child: Text("No data found please add some!"));
 
-    if (_expenseList.isNotEmpty) {
+    if (db.expenceList.isNotEmpty) {
       mainContent = ExpenccesList(
-        expenseList: _expenseList,
+        expenseList: db.expenceList,
         onDeleteExpence: removeExpence,
       );
     }
@@ -164,7 +183,7 @@ class _ExpencesState extends State<Expences> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           PieChart(
-            animationDuration: Duration(milliseconds: 800),
+            animationDuration: const Duration(milliseconds: 800),
             chartLegendSpacing: 32,
             centerText: "Expences",
             dataMap: dataMap,
