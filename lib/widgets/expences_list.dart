@@ -12,20 +12,23 @@ class ExpenccesList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: ListView.builder(
-        itemCount: expenseList.length,
-        itemBuilder: (context, index) {
-          return Dismissible(
-            direction: DismissDirection.startToEnd,
-            onDismissed: (direction) {
-              onDeleteExpence(expenseList[index]);
-            },
-            key: ValueKey(expenseList[index]),
-            child: ExpenceItem(
-              expence: expenseList[index],
-            ),
-          );
-        },
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ListView.builder(
+          itemCount: expenseList.length,
+          itemBuilder: (context, index) {
+            return Dismissible(
+              direction: DismissDirection.startToEnd,
+              onDismissed: (direction) {
+                onDeleteExpence(expenseList[index]);
+              },
+              key: ValueKey(expenseList[index]),
+              child: ExpenceItem(
+                expence: expenseList[index],
+              ),
+            );
+          },
+        ),
       ),
     );
   }
