@@ -87,6 +87,8 @@ class _AddNewExpencceState extends State<AddNewExpencce> {
 
       //append the new expance
       widget.onAddExpence(newExpence);
+
+      Navigator.pop(context);
     }
   }
 

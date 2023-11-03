@@ -39,7 +39,15 @@ class _ExpencesState extends State<Expences> {
   }
 
   void addNewExpence(ExpenceModel expence) {
-    expenseList.add(expence);
+    setState(() {
+      expenseList.add(expence);
+    });
+  }
+
+  void removeExpence(ExpenceModel expence) {
+    setState(() {
+      expenseList.remove(expence);
+    });
   }
 
   @override
@@ -58,7 +66,10 @@ class _ExpencesState extends State<Expences> {
       body: Column(
         children: [
           const Text("The chart"),
-          ExpenccesList(expenseList: expenseList)
+          ExpenccesList(
+            expenseList: expenseList,
+            onDeleteExpence: removeExpence,
+          )
         ],
       ),
     );
