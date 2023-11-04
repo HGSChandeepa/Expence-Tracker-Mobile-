@@ -75,6 +75,7 @@ class _ExpencesState extends State<Expences> {
             setState(() {
               db.expenceList.insert(deletedIndex, deletingExpende);
             });
+            calculateCategoryAmounts();
           },
         ),
       ),
