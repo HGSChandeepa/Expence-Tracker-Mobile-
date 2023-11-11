@@ -21,11 +21,12 @@ class ExpenceItem extends StatelessWidget {
               expence.title,
               style: Theme.of(context).textTheme.titleLarge,
             ),
+            Text(expence.id),
             const SizedBox(height: 4),
             Row(
               children: [
                 Text(
-                  '\$${expence.amount.toStringAsFixed(2)}',
+                  '\$${expence.decsription}',
                 ),
                 const Spacer(),
                 Row(

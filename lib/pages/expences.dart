@@ -40,14 +40,38 @@ class _ExpencesState extends State<Expences> {
       builder: (context) {
         return AddNewExpencce(
           onAddExpence: addNewExpence,
+          expence: ExpenceModel(
+            id: uuid,
+            title: "",
+            decsription: "",
+            date: DateTime.now(),
+            category: Category.lowest,
+          ),
         );
       },
     );
   }
 
+  //add new expence or edit under the expence id
+  // void addNewExpence(ExpenceModel expence) {
+  //   setState(() {
+  //     db.expenceList.add(expence);
+  //     calculateCategoryAmounts();
+  //   });
+  //   db.updateData();
+  // }
+
   void addNewExpence(ExpenceModel expence) {
     setState(() {
-      db.expenceList.add(expence);
+      if (db.expenceList.contains(expence)) {
+        // Update the existing expense
+        final index = db.expenceList.indexOf(expence);
+        db.expenceList[index] = expence;
+      } else {
+        // Add the new expense with a new ID
+        db.expenceList.add(expence);
+      }
+
       calculateCategoryAmounts();
     });
 
@@ -82,6 +106,20 @@ class _ExpencesState extends State<Expences> {
     );
   }
 
+  //edit a tile
+  void editExpence(ExpenceModel expence) {
+    showModalBottomSheet(
+      isScrollControlled: true,
+      context: context,
+      builder: (context) {
+        return AddNewExpencce(
+          onAddExpence: addNewExpence,
+          expence: expence,
+        );
+      },
+    );
+  }
+
 // PIE CHART
 
   double foodVal = 0;
@@ -95,20 +133,20 @@ class _ExpencesState extends State<Expences> {
     double leasureTotal = 0;
     double workTotal = 0;
 
-    for (final expence in db.expenceList) {
-      if (expence.category == Category.food) {
-        foodTotal += expence.amount;
-      }
-      if (expence.category == Category.leasure) {
-        leasureTotal += expence.amount;
-      }
-      if (expence.category == Category.travel) {
-        travelTotal += expence.amount;
-      }
-      if (expence.category == Category.work) {
-        workTotal += expence.amount;
-      }
-    }
+    // for (final expence in db.expenceList) {
+    //   if (expence.category == Category.lowest) {
+    //     foodTotal += expence.;
+    //   }
+    //   if (expence.category == Category.low) {
+    //     leasureTotal += expence.amount;
+    //   }
+    //   if (expence.category == Category.high) {
+    //     travelTotal += expence.amount;
+    //   }
+    //   if (expence.category == Category.highst) {
+    //     workTotal += expence.amount;
+    //   }
+    // }
 
     setState(() {
       foodVal = foodTotal;
@@ -118,20 +156,20 @@ class _ExpencesState extends State<Expences> {
 
       // Update the dataMap with the calculated values
       dataMap = {
-        "Food": foodVal,
-        "Travel": travelVal,
-        "Leasure": leasureVal,
-        "Work": workVal,
+        "Lowest": foodVal,
+        "Low": travelVal,
+        "High": leasureVal,
+        "Highest": workVal,
       };
     });
   }
 
 // Initialize dataMap with the initial values
   Map<String, double> dataMap = {
-    "Food": 0,
-    "Travel": 0,
-    "Leasure": 0,
-    "Work": 0,
+    "Lowest": 0,
+    "Low": 0,
+    "High": 0,
+    "Highest": 0,
   };
 
   @override
@@ -159,13 +197,14 @@ class _ExpencesState extends State<Expences> {
       mainContent = ExpenccesList(
         expenseList: db.expenceList,
         onDeleteExpence: removeExpence,
+        onEditExpence: editExpence,
       );
     }
 
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 0, 81, 255),
-        title: const Text("Expence Tracker"),
+        title: const Text("Task Manager"),
         elevation: 0,
         actions: [
           Container(
@@ -183,12 +222,12 @@ class _ExpencesState extends State<Expences> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          PieChart(
-            animationDuration: const Duration(milliseconds: 800),
-            chartLegendSpacing: 32,
-            centerText: "Expences",
-            dataMap: dataMap,
-          ),
+          // PieChart(
+          //   animationDuration: const Duration(milliseconds: 800),
+          //   chartLegendSpacing: 32,
+          //   centerText: "Expences",
+          //   dataMap: dataMap,
+          // ),
           mainContent
         ],
       ),

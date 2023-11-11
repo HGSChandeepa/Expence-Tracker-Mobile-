@@ -17,8 +17,9 @@ class ExpenceModelAdapter extends TypeAdapter<ExpenceModel> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return ExpenceModel(
+      id: fields[0] as String,
       title: fields[1] as String,
-      amount: fields[2] as double,
+      decsription: fields[2] as String,
       date: fields[3] as DateTime,
       category: fields[4] as Category,
     );
@@ -33,7 +34,7 @@ class ExpenceModelAdapter extends TypeAdapter<ExpenceModel> {
       ..writeByte(1)
       ..write(obj.title)
       ..writeByte(2)
-      ..write(obj.amount)
+      ..write(obj.decsription)
       ..writeByte(3)
       ..write(obj.date)
       ..writeByte(4)

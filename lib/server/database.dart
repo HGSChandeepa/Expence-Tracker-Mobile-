@@ -1,5 +1,6 @@
 import 'package:expence_tracker_app/models/expence.dart';
 import 'package:hive/hive.dart';
+import 'package:uuid/uuid.dart';
 
 class Database {
   //create  the database reference
@@ -11,15 +12,17 @@ class Database {
   void createInitialData() {
     expenceList = [
       ExpenceModel(
+          id: const Uuid().v4(),
           title: "Pepper",
-          amount: 10,
+          decsription: "this is a test description",
           date: DateTime.now(),
-          category: Category.food),
+          category: Category.low),
       ExpenceModel(
+          id: const Uuid().v4(),
           title: "Tomato",
-          amount: 12.5,
+          decsription: "this is a test description",
           date: DateTime.now(),
-          category: Category.travel)
+          category: Category.lowest)
     ];
   }
 

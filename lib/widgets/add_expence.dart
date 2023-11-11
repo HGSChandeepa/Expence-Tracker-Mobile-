@@ -1,9 +1,12 @@
 import 'package:expence_tracker_app/models/expence.dart';
 import 'package:flutter/material.dart';
+import 'package:uuid/uuid.dart';
 
 class AddNewExpencce extends StatefulWidget {
-  const AddNewExpencce({super.key, required this.onAddExpence});
+  const AddNewExpencce(
+      {super.key, required this.onAddExpence, required this.expence});
   final void Function(ExpenceModel expence) onAddExpence;
+  final ExpenceModel expence;
 
   @override
   State<AddNewExpencce> createState() => _AddNewExpencceState();
@@ -11,10 +14,10 @@ class AddNewExpencce extends StatefulWidget {
 
 class _AddNewExpencceState extends State<AddNewExpencce> {
   final _titleController = TextEditingController();
-  final _amountController = TextEditingController();
+  final _descController = TextEditingController();
 
   DateTime _selectedDate = DateTime.now();
-  Category _selectedCategory = Category.travel;
+  Category _selectedCategory = Category.lowest;
 
   final DateTime initialDate = DateTime.now();
   final DateTime firstDate = DateTime(
@@ -38,16 +41,12 @@ class _AddNewExpencceState extends State<AddNewExpencce> {
     }
   }
 
-  //handle the save form for expences
   void _handleSaveExpences() {
-    //form validate
-    final _enteredAmount = double.tryParse(
-        _amountController.text.trim()); // ten >> null  || "100"  >> 100.00
+    // Form validation
+    // final _enteredAmount = double.tryParse(_amountController.text.trim());
 
-    if (_titleController.text.trim().isEmpty ||
-        (_enteredAmount == null || _enteredAmount <= 0)) {
-      //show a error message
-
+    if (_titleController.text.trim().isEmpty || _descController.text.isEmpty) {
+      // Show an error message
       showDialog(
         useSafeArea: true,
         context: context,
@@ -74,20 +73,36 @@ class _AddNewExpencceState extends State<AddNewExpencce> {
           );
         },
       );
-
       return;
     } else {
-      //create a new expence model and enter to the expenceList
+      // Create a new expense model
+      ExpenceModel updatedExpence;
+      print(widget.expence.id);
 
-      final ExpenceModel newExpence = ExpenceModel(
+      // If the expense has a title, it means it's an existing expense, so update it
+      if (widget.expence.title.isNotEmpty) {
+        updatedExpence = ExpenceModel(
+          id: widget.expence.id,
           title: _titleController.text,
-          amount: _enteredAmount,
+          decsription: _descController.text,
           date: _selectedDate,
-          category: _selectedCategory);
+          category: _selectedCategory,
+        );
+      } else {
+        // If the existing expense doesn't have a title, it means it's a new expense
+        updatedExpence = ExpenceModel(
+          id: const Uuid().v4(),
+          title: _titleController.text,
+          decsription: _descController.text,
+          date: _selectedDate,
+          category: _selectedCategory,
+        );
+      }
 
-      //append the new expance
-      widget.onAddExpence(newExpence);
+      // Add or update the expense
+      widget.onAddExpence(updatedExpence);
 
+      // Close the screen
       Navigator.pop(context);
     }
   }
@@ -96,8 +111,21 @@ class _AddNewExpencceState extends State<AddNewExpencce> {
   @override
   void dispose() {
     _titleController.dispose();
-    _amountController.dispose();
+    _descController.dispose();
     super.dispose();
+  }
+
+  //init state
+  @override
+  void initState() {
+    super.initState();
+    //set the initial values for the form
+    if (widget.expence.title.isNotEmpty) {
+      _titleController.text = widget.expence.title;
+      _descController.text = widget.expence.decsription;
+      _selectedDate = widget.expence.date;
+      _selectedCategory = widget.expence.category;
+    }
   }
 
   @override
@@ -110,7 +138,7 @@ class _AddNewExpencceState extends State<AddNewExpencce> {
           TextField(
             controller: _titleController,
             decoration: const InputDecoration(
-                hintText: "Add the Expence title", label: Text("Title")),
+                hintText: "Add the Task title", label: Text("Task Title")),
             keyboardType: TextInputType.text,
             maxLength: 50,
           ),
@@ -120,12 +148,12 @@ class _AddNewExpencceState extends State<AddNewExpencce> {
               //amount
               Expanded(
                 child: TextField(
-                  controller: _amountController,
+                  controller: _descController,
                   decoration: const InputDecoration(
-                      hintText: "Enter the aoumt",
-                      label: Text("Amount"),
-                      prefixText: "\$ "),
-                  keyboardType: TextInputType.number,
+                    hintText: "Enter the task description",
+                    label: Text("Description"),
+                    // prefixText: "\$ ",
+                  ),
                 ),
               ),
 
